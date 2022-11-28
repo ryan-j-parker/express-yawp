@@ -51,4 +51,11 @@ describe('restaurants routes', () => {
       ]
     `);
   });
+
+  it('GET /api/v1/restaurants/:restId should return a restaurant by ID', async ()=> {
+    const res = await request(app).get('/api/v1/restaurants/1');
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchInlineSnapshot();
+  });
+
 });
