@@ -9,7 +9,7 @@ const mockUser = {
   email: 'mashed@potatoes.gravy',
   firstName: 'Scrumbledore',
   lastName: 'Lastnamerson',
-  passwordHash: 'hashymash1257',
+  password: 'hashymash1257',
 };
 
 describe('restaurants routes', () => {
@@ -88,10 +88,19 @@ describe('restaurants routes', () => {
 
   it('POST /api/v1/restaurants/:id/reviews should add a review', async () => {
     const [agent] = await registerAndLogin();
+    console.log('agent: ', agent);
     const res = await agent
       .post('/api/v1/restaurants/1/reviews')
       .send({ stars: 5, review: 'This is a test review' });
     expect(res.status).toBe(200);
-    expect(res.body).toMatchInlineSnapshot();
+    expect(res.body).toMatchInlineSnapshot(`
+      Object {
+        "detail": null,
+        "id": "4",
+        "restaurant_id": "1",
+        "stars": 5,
+        "user_id": "4",
+      }
+    `);
   });
 });
