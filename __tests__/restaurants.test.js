@@ -3,15 +3,6 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/UserService');
-// const { agent } = require('supertest');
-
-// Dummy user for testing
-const mockUser = {
-  email: 'mashed@potatoes.gravy',
-  firstName: 'Scrumbledore',
-  lastName: 'Lastnamerson',
-  password: 'hashymash1257',
-};
 
 describe('restaurants routes', () => {
   beforeEach(() => {
@@ -89,7 +80,6 @@ describe('restaurants routes', () => {
 
   it('POST /api/v1/restaurants/:id/reviews should add a review', async () => {
     const [agent] = await registerAndLogin();
-    console.log('agent: ', agent);
     const res = await agent
       .post('/api/v1/restaurants/1/reviews')
       .send({ stars: 5, review: 'This is a test review' });
@@ -105,13 +95,35 @@ describe('restaurants routes', () => {
     `);
   });
 
-  it('DELETE /api/v1/restaurants/:id/reviews should delete a review', async () => {
-    const agent = await registerAndLogin();
-    const res = await agent.delete('/api/v1/restaurants/1/reviews');
-    expect(res.status).toBe(204);
+  const mockUser = {
+    email: 'mashed@potatoes.gravy',
+    firstName: 'Scrumbledore',
+    lastName: 'Lastnamerson',
+    password: 'hashymash1257',
+  };
 
-    const getRes = await request(app).get('/api/v1/restaurants/1/reviews');
+  const mockAdmin = {
+    email: 'admin',
+    firstName: 'admininez',
+    lastName: 'administan',
+    password: 'admin',
+  };
+
+  const mockReview = {
+    stars: 4,
+    detail: 'do not talk to me or my son ever again',
+  };
+
+  it('DELETE /api/v1/restaurants/:id/reviews should delete a review', async () => {
+    const [agent] = await registerAndLogin(mockAdmin);
+
+    const review = await agent
+      .post('/api/v1/restaurants/3/reviews')
+      .send(mockReview);
+    const res = await agent.delete(`/api/v1/reviews/${review.body.id}`);
+    expect(res.status).toBe(200);
+
+    const getRes = await request(app).get(`/api/v1/reviews${review.body.id}`);
     expect(getRes.status).toBe(404);
   });
-
 });
